@@ -1,8 +1,10 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Clock } from "lucide-react";
+import { Calendar, MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 interface Event {
   id: string;
@@ -11,9 +13,7 @@ interface Event {
   date: string;
   time: string;
   location: string;
-  category: 'academic' | 'sports' | 'social' | 'arts';
-  capacity: number;
-  registered: number;
+  category: 'academic' | 'sports' | 'social' | 'arts' | 'music' | 'theater' | 'science' | 'community' | 'leadership' | 'career' | 'workshop';
   image?: string;
 }
 
@@ -22,28 +22,42 @@ interface EventCardProps {
 }
 
 const categoryColors = {
+  education: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
   academic: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   sports: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
   social: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
   arts: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+  music: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
+  theater: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
+  science: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
+  community: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
+  leadership: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+  career: 'bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-300',
+  workshop: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-300',
 };
 
-const EventCard = ({ event }: EventCardProps) => {
-  const spotsLeft = event.capacity - event.registered;
-  const isAlmostFull = spotsLeft <= 5 && spotsLeft > 0;
-  const isFull = spotsLeft === 0;
+const EventCard = ({ event, onRegister }: EventCardProps & { onRegister?: (event: Event) => void }) => {
+  // Format category name for display
+  const formatCategoryName = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+      'arts': 'Arts & Culture',
+      'science': 'Science & Tech',
+      'community': 'Community Service',
+      'career': 'Career Development',
+    };
+    return categoryMap[category] || category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  const { isAuthenticated } = useAuth();
+  const [registering, setRegistering] = useState(false);
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-gradient-to-br from-card to-card/50">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <Badge variant="secondary" className={categoryColors[event.category]}>
-            {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
+          <Badge variant="secondary" className={categoryColors[event.category] || "bg-gray-100 text-gray-800"}>
+            {formatCategoryName(event.category)}
           </Badge>
-          <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-            <Users className="w-3 h-3" />
-            <span>{event.registered}/{event.capacity}</span>
-          </div>
         </div>
         <CardTitle className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
           {event.title}
@@ -71,41 +85,26 @@ const EventCard = ({ event }: EventCardProps) => {
             <span>{event.location}</span>
           </div>
         </div>
-
-        {/* Availability Status */}
-        <div className="pt-2">
-          {isFull ? (
-            <Badge variant="destructive" className="text-xs">
-              Event Full
-            </Badge>
-          ) : isAlmostFull ? (
-            <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-              Only {spotsLeft} spots left!
-            </Badge>
-          ) : (
-            <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-              {spotsLeft} spots available
-            </Badge>
-          )}
-        </div>
       </CardContent>
 
-      <CardFooter className="pt-0">
-        <div className="flex gap-2 w-full">
-          <Button asChild variant="outline" size="sm" className="flex-1">
-            <Link to={`/events/${event.id}`}>View Details</Link>
-          </Button>
-          <Button 
-            asChild 
-            size="sm" 
-            className="flex-1 shadow-sm hover:shadow-md transition-shadow"
-            disabled={isFull}
+      <CardFooter className="pt-0 flex flex-col gap-2">
+        <Button asChild className="w-full shadow-sm hover:shadow-md transition-shadow">
+          <Link to={`/events/${event.id}`}>View Details</Link>
+        </Button>
+        {isAuthenticated && onRegister && (
+          <Button
+            className="w-full"
+            variant="secondary"
+            disabled={registering}
+            onClick={async () => {
+              setRegistering(true);
+              await onRegister(event);
+              setRegistering(false);
+            }}
           >
-            <Link to={`/register/${event.id}`} className={isFull ? "pointer-events-none opacity-50" : ""}>
-              {isFull ? "Full" : "Register"}
-            </Link>
+            {registering ? "Registering..." : "Register"}
           </Button>
-        </div>
+        )}
       </CardFooter>
     </Card>
   );

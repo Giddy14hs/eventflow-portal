@@ -91,10 +91,18 @@ const Admin = () => {
   const utilizationRate = Math.round((totalRegistrations / totalCapacity) * 100);
 
   const categoryColors = {
+    education: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
     academic: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
     sports: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
     social: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
     arts: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+    music: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
+    theater: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
+    science: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
+    community: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
+    leadership: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+    career: 'bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-300',
+    workshop: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-300',
   };
 
   const statusColors = {
@@ -270,10 +278,18 @@ const Admin = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
                     <SelectItem value="academic">Academic</SelectItem>
                     <SelectItem value="sports">Sports</SelectItem>
                     <SelectItem value="social">Social</SelectItem>
-                    <SelectItem value="arts">Arts</SelectItem>
+                    <SelectItem value="arts">Arts & Culture</SelectItem>
+                    <SelectItem value="music">Music</SelectItem>
+                    <SelectItem value="theater">Theater</SelectItem>
+                    <SelectItem value="science">Science & Technology</SelectItem>
+                    <SelectItem value="community">Community Service</SelectItem>
+                    <SelectItem value="leadership">Leadership</SelectItem>
+                    <SelectItem value="career">Career Development</SelectItem>
+                    <SelectItem value="workshop">Workshops</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
